@@ -2,6 +2,10 @@
 const connection = require("./database/connection");
 const express = require("express");
 const cors = require("cors");
+// Importando rutas 
+const UserRoutes = require("./routes/user");
+const PublicationsRoutes = require("./routes/publications");
+const FollowRoutes = require("./routes/follow");
 
 //  Mensaje de bienvenida
 console.log("API NODE para RED SOCIAL arrancada !!")
@@ -20,19 +24,10 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
-// Cargar y configurar rutas 
-
-// Ruta de prueba
-app.get("/ruta-prueba", (req, res) =>{
-
-    return res.status(200).json(
-        {
-            "id":1,
-            "nombre":"Julian",
-            "web":"jansdesarrolladorweb.com"
-        }
-    )
-})
+// Configurando carga de rutas 
+app.use("/api", UserRoutes);
+app.use("/api", PublicationsRoutes);
+app.use("/api", FollowRoutes);
 
 // poner servidor a escuchar peticiones http
 app.listen(puerto, () => {
