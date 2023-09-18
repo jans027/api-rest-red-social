@@ -25,9 +25,9 @@ app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 
 // Configurando carga de rutas 
-app.use("/api", UserRoutes);
-app.use("/api", PublicationsRoutes);
-app.use("/api", FollowRoutes);
+app.use("/api/user", UserRoutes);
+app.use("/api/publication", PublicationsRoutes);
+app.use("/api/follow", FollowRoutes);
 
 // poner servidor a escuchar peticiones http
 app.listen(puerto, () => {
