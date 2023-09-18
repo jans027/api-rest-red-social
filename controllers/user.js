@@ -46,16 +46,21 @@ const register = async (req, res) => {
         // Crear objeto de usuario
         let user_to_save = new User(params);
 
-        //Guardar usuario en la bbdd
-        user_to_save.save();
+        if (error || !user_to_save) {
+            return res.status(500).json({
+                status: "error",
+                messaje: "Error al guardar el usuario",
+            });
+        } else {
+            //Guardar usuario en la bbdd
+            user_to_save.save();
 
-        return res.status(200).json({
-            messaje: "Acción de registro de usuarios",
-            status: "success",
-            // savedUser,
-            user_to_save
-        });
-
+            return res.status(200).json({
+                status: "success",
+                messaje: "Usuario guardado correctamente !!",
+                user_to_save
+            });
+        }
 
     } catch (error) {
         return res.status(500).json({
