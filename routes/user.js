@@ -7,12 +7,14 @@ const multer = require("multer");
 // Configuracion de subida
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        cb(null, "../uploads/avatars")
+        cb(null, "./uploads/avatars");
     },
-    filename: () => {
-
+    filename: (req, file, cb) => {
+        cb(null, "avatar-"+Date.now()+"-"+file.originalname);
     }
-})
+});
+
+const uploads = multer({storage});
 
 
 // Definir rutas
@@ -22,7 +24,7 @@ router.post("/login", UserController.login);
 router.get("/profile/:id", check.auth, UserController.profile);
 router.get("/list/:page?", check.auth, UserController.list); // con el "?" se define que un parametro es opcional
 router.put("/update", check.auth, UserController.update);
-router.post("/upload", check.auth, UserController.upload);
+router.post("/upload", [check.auth, uploads.single("file0")], UserController.upload);
 
 
 

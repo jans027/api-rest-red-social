@@ -294,7 +294,9 @@ const upload = async (req, res) => {
     return res.status(200).send({
         status: "success",
         messague: "Subida de imagenes",
-        user: req.user
+        user: req.user,
+        file: req.file,
+        files: req.files
     });
 }
 
