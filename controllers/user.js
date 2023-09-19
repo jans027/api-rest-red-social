@@ -212,7 +212,7 @@ const list = (req, res) => {
 
 }
 
-// 
+// actualizar la info de un usuario
 const update = async (req, res) => {
     // Recoger info del usuario a actualizar
     const userIdentity = req.user;
@@ -286,6 +286,16 @@ const update = async (req, res) => {
 
 
 
+};
+
+// subir imagenes
+const upload = async (req, res) => {
+
+    return res.status(200).send({
+        status: "success",
+        messague: "Subida de imagenes",
+        user: req.user
+    });
 }
 
 // Exportar acciones
@@ -295,5 +305,6 @@ module.exports = {
     login,
     profile,
     list,
-    update
+    update,
+    upload
 }
