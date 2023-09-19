@@ -132,10 +132,41 @@ const login = (req, res) => {
     // Datos del usuario
 
 
-}
+};
+
+const profile = (req, res) => {
+    // recibir el parametro del id de usuario por la url
+    const id = req.params.id;
+
+    // Consulta para sacar los datos del usuario
+    User.findById(id)
+        .select({ "role": 0, "email": 0, "password": 0})// informacion que no se va a mostrar
+        .then((userProfile) => {
+            if (!userProfile) {
+                return res.status(404).send({
+                    status: "error",
+                    messague: "El usuario no existe o hay un error"
+                });
+            }
+            // Devolver resultado
+            return res.status(200).send({
+                status: "success",
+                user: userProfile
+            });
+
+        }).catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                messague: "Error en la consulta de usuarios"
+            });
+        });
+
+};
+
 // Exportar acciones
 module.exports = {
     pruebaUser,
     register,
-    login
+    login,
+    profile
 }
