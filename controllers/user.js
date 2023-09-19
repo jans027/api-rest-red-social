@@ -1,6 +1,7 @@
 // Importar dependencias y modulos
 const bcrypt = require("bcrypt");
 const mongoosePagination = require("mongoose-pagination");
+const fs = require("fs");
 // Importar modelos
 const User = require("../models/user");
 //  Importar servicios
@@ -304,14 +305,20 @@ const upload = async (req, res) => {
 
     // Sacar la extension del archivo
     const imageSplit = image.split("\.");
-    const extension = imageSplit[1];
+    const extension = imageSplit[imageSplit.length - 1];
 
     // Comprobar extension
     if (extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif" ) {
         
+        // Borrar archivo subido cuando no corresponde a la extension correcta
+        const filePath = req.file.path;
+        const fileDelete = fs.unlinkSync(filePath);
+        // Devolver respuesta negativa
+        return res.status(400).send({
+            status: "error",
+            message: "Extension del fichero invalida",
+        });
     }
-
-    // Si no es correcta, borrar archivo
 
     // Si es correcta, guardar imagen en base de datos
 
