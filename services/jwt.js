@@ -16,7 +16,7 @@ const cretaeToken = (user) =>{
         role: user.role,
         imagen: user.image,
         iat: moment().unix(), // fecha en la cual se genera el token
-        exp: moment().add(30, "days").unix // se genera el token de AUTH con una expiracion de 30 dias
+        exp: moment().add(30, "days").unix() // se genera el token de AUTH con una expiracion de 30 dias
     }
 
     // Devolver jwt token codificado
