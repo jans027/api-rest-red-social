@@ -2,6 +2,8 @@
 const bcrypt = require("bcrypt");
 // Importar modelos
 const User = require("../models/user");
+//  Importar servicios
+const jwt = require("../services/jwt");
 
 // Acciones de prueba
 const pruebaUser = (req, res) => {
@@ -85,7 +87,7 @@ const login = (req, res) => {
     }
 
     // Buscar en la bd si existe
-    User.findOne({ email: params.email }, {"role": 0, "create_at": 0})
+    User.findOne({ email: params.email }, { "role": 0, "create_at": 0 })
 
         .then((user) => {
             if (!user) {
@@ -96,31 +98,35 @@ const login = (req, res) => {
             }
 
             // Comprobar la password
-            let pwd = bcrypt.compareSync(params.password, user.password);
+            const pwd = bcrypt.compareSync(params.password, user.password);
 
             if (!pwd) {
                 return res.status(400).send({
                     status: "error",
-                    messague: "No existe el usuario"
+                    messague: "No te has identificado correctamente"
                 });
             }
 
+            // Devolver token de identificacion
+            const token = jwt.cretaeToken(user);
 
             return res.status(200).send({
                 status: "success",
-                messague: "Usuario encontrado",
-                user
+                messague: "Te has identificado correctamente !",
+                user: {
+                    id: user._id,
+                    name: user.name,
+                    nick: user.nick
+                },
+                token
             });
+
         }).catch((error) => {
             return res.status(500).json({
                 status: "Error",
                 messague: "Error en la consulta de usuarios"
             });
         });
-
-    // Comprobar password
-
-    // Devolver token
 
     // Datos del usuario
 
