@@ -291,12 +291,37 @@ const update = async (req, res) => {
 // subir imagenes
 const upload = async (req, res) => {
 
+    // Recoger fichero de imagen y comprobar que existe
+    if (!req.file) {
+        return res.status(404).send({
+            status: "error",
+            message: "Peticion no incluye mensaje",
+        });
+    }
+
+    // Conseguir el nombre del archivo
+    let image = req.file.originalname;
+
+    // Sacar la extension del archivo
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[1];
+
+    // Comprobar extension
+    if (extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif" ) {
+        
+    }
+
+    // Si no es correcta, borrar archivo
+
+    // Si es correcta, guardar imagen en base de datos
+
+    // devolver respuesta
     return res.status(200).send({
         status: "success",
-        messague: "Subida de imagenes",
+        message: "Subida de imagenes",
         user: req.user,
         file: req.file,
-        files: req.files
+        image
     });
 }
 
