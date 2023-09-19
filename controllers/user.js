@@ -212,11 +212,88 @@ const list = (req, res) => {
 
 }
 
+// 
+const update = async (req, res) => {
+    // Recoger info del usuario a actualizar
+    const userIdentity = req.user;
+    const userToUpdate = req.body;
+
+    // Eliminar campos sobrantes
+    delete userToUpdate.iat;
+    delete userToUpdate.exp;
+
+    // Comprobar si el usuario ya existe
+    try {
+        // Control usuarios duplicados
+        const users = await User.find({
+            $or: [
+                { email: userToUpdate.email.toLowerCase() },
+                { nick: userToUpdate.nick.toLowerCase() },
+            ]
+        }).exec();
+
+        let userIsset = false;
+        users.forEach(element => {
+            if (element && element._id != element.id) userIsset = true;
+        });
+
+
+        if (userIsset) {
+            return res.status(200).send({
+                status: "success",
+                messague: "El usuario ya existe"
+            });
+        }
+
+
+        if (userToUpdate.password) {
+            // Cifrar la contrasena 
+            let pwd = await bcrypt.hash(userToUpdate.password, 10,);
+            userToUpdate.password = pwd;
+        }
+
+        // Buscar y actualizar
+        User.findByIdAndUpdate(userIdentity.id, userToUpdate, { new: true })
+            .then((userUpdated) => {
+
+                if (!userUpdated) {
+                    return res.status(500).send({
+                        status: "error",
+                        message: "Error al actualizar el usuario"
+                    })
+                }
+
+                return res.status(200).send({
+                    status: "success",
+                    message: "Metodo de actualizar usuarios",
+                    user: userUpdated
+                })
+
+            }).catch((error) => {
+                return res.status(500).send({
+                    status: "error",
+                    message: "Error de actualizacion"
+                })
+            });
+
+
+    } catch (error) {
+        return res.status(500).json({
+            status: "error",
+            messague: "Error en la consulta de usuarios"
+        });
+    }
+
+
+
+}
+
 // Exportar acciones
 module.exports = {
     pruebaUser,
     register,
     login,
     profile,
-    list
+    list,
+    update
 }
