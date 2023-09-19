@@ -46,7 +46,7 @@ const register = async (req, res) => {
         // Crear objeto de usuario
         let user_to_save = new User(params);
 
-        if (error || !user_to_save) {
+        if (!user_to_save) {
             return res.status(500).json({
                 status: "error",
                 messaje: "Error al guardar el usuario",
@@ -71,8 +71,64 @@ const register = async (req, res) => {
 
 }
 
+// Login de usuarios
+const login = (req, res) => {
+
+    // Recoger parametros
+    let params = req.body;
+
+    if (!params.email || !params.password) {
+        return res.status(400).send({
+            status: "error",
+            messague: "Faltan datos por enviar"
+        });
+    }
+
+    // Buscar en la bd si existe
+    User.findOne({ email: params.email }, {"role": 0, "create_at": 0})
+
+        .then((user) => {
+            if (!user) {
+                return res.status(400).send({
+                    status: "error",
+                    messague: "No existe el usuario"
+                });
+            }
+
+            // Comprobar la password
+            let pwd = bcrypt.compareSync(params.password, user.password);
+
+            if (!pwd) {
+                return res.status(400).send({
+                    status: "error",
+                    messague: "No existe el usuario"
+                });
+            }
+
+
+            return res.status(200).send({
+                status: "success",
+                messague: "Usuario encontrado",
+                user
+            });
+        }).catch((error) => {
+            return res.status(500).json({
+                status: "Error",
+                messague: "Error en la consulta de usuarios"
+            });
+        });
+
+    // Comprobar password
+
+    // Devolver token
+
+    // Datos del usuario
+
+
+}
 // Exportar acciones
 module.exports = {
     pruebaUser,
-    register
+    register,
+    login
 }
