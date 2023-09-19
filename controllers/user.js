@@ -1,5 +1,6 @@
 // Importar dependencias y modulos
 const bcrypt = require("bcrypt");
+const mongoosePagination = require("mongoose-pagination");
 // Importar modelos
 const User = require("../models/user");
 //  Importar servicios
@@ -134,6 +135,7 @@ const login = (req, res) => {
 
 };
 
+// Perfil de usuario registrado
 const profile = (req, res) => {
     // recibir el parametro del id de usuario por la url
     const id = req.params.id;
@@ -163,10 +165,24 @@ const profile = (req, res) => {
 
 };
 
+// Listado de usarios
+const list = (req, res) => {
+    // Controlar en que pagina estamos 
+
+    // Consulta con mongoose paginate
+    
+    // Devolver el resultado (posteriormente info de follows)
+    return res.status(200).send({
+        status: "success",
+        message: "Ruta de listado de usuarios"
+    })
+}
+
 // Exportar acciones
 module.exports = {
     pruebaUser,
     register,
     login,
-    profile
+    profile,
+    list
 }
