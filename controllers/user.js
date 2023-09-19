@@ -142,7 +142,7 @@ const profile = (req, res) => {
 
     // Consulta para sacar los datos del usuario
     User.findById(id)
-        .select({ "role": 0, "email": 0, "password": 0})// informacion que no se va a mostrar
+        .select({ "role": 0, "email": 0, "password": 0 })// informacion que no se va a mostrar
         .then((userProfile) => {
             if (!userProfile) {
                 return res.status(404).send({
@@ -168,14 +168,48 @@ const profile = (req, res) => {
 // Listado de usarios
 const list = (req, res) => {
     // Controlar en que pagina estamos 
+    let page = 1;
+
+    if (req.params.page) {
+        page = req.params.page;
+    }
+    // Convirtiendo page a un numero entero
+    page = parseInt(page);
 
     // Consulta con mongoose paginate
-    
-    // Devolver el resultado (posteriormente info de follows)
-    return res.status(200).send({
-        status: "success",
-        message: "Ruta de listado de usuarios"
-    })
+    let itemsPerPage = 5;
+
+    User.find().sort('_id').paginate(page, itemsPerPage)
+        .then(async (users) => {
+
+            // Get total users
+            const totalUsers = await User.countDocuments({}).exec();
+
+            if (!users) {
+                return res.status(404).send({
+                    status: "error",
+                    message: "No hay usuarios disponibles",
+                })
+            }
+
+
+            // Devolver el resultado (posteriormente info de follows)
+            return res.status(200).send({
+                status: "success",
+                users,
+                page,
+                itemsPerPage,
+                totalUsers,
+                pages: Math.ceil(totalUsers / itemsPerPage) //redondeo del total de paginas
+            })
+        }).catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                message: "Error en la consulta",
+            })
+        });
+
+
 }
 
 // Exportar acciones
