@@ -10,10 +10,18 @@ const pruebaFollow = (req, res) =>{
 
 // Accion de guardar un follow (accion de seguir)
 const save = (req, res) => {
+    // Conseguir datos por body
+
+    // Scara id del usuario identificado
+
+    // Crear objeto con modelo follow
+
+    // Guardar objeto en bd
 
     return res.status(200).send({
         status:"success",
-        message: "Metodo dar follow"
+        message: "Metodo dar follow",
+        identity: req.user
     })
 }
 
