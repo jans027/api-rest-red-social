@@ -1,7 +1,8 @@
 // Importar dependencias y modulos
 const bcrypt = require("bcrypt");
 const mongoosePagination = require("mongoose-pagination");
-const fs = require("fs");
+const fs = require("fs").promises;
+const path = require("path");
 // Importar modelos
 const User = require("../models/user");
 //  Importar servicios
@@ -348,11 +349,34 @@ const upload = async (req, res) => {
 
 // Mostrar avatar
 const avatar = async (req, res) => {
+    // Sacar el parametro de la url
+    const file = req.params.file;
 
-    return res.status(200).send({
-        status: "success",
-        message: "Metodo mostrar avatar"
-    })
+    // Mostrar el path real de la imagen
+    const filePath = `./uploads/avatars/${file}`;
+
+    try {
+
+        // Comprobar que existe
+        const exists = await fs.stat(filePath);
+
+        if (!exists) {
+            return res.status(404).send({
+                status: "error",
+                message: "No existe la imagen"
+            });
+        };
+
+        // Devolver un file
+        return res.sendFile(path.resolve(filePath));
+
+    } catch (error) {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en la consulta de avatar"
+        });
+    }
+
 };
 
 
