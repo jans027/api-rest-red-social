@@ -308,8 +308,8 @@ const upload = async (req, res) => {
     const extension = imageSplit[imageSplit.length - 1];
 
     // Comprobar extension
-    if (extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif" ) {
-        
+    if (extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif") {
+
         // Borrar archivo subido cuando no corresponde a la extension correcta
         const filePath = req.file.path;
         const fileDelete = fs.unlinkSync(filePath);
@@ -321,15 +321,31 @@ const upload = async (req, res) => {
     }
 
     // Si es correcta, guardar imagen en base de datos
+    User.findByIdAndUpdate(req.user.id, { image: req.file.filename }, { new: true })
+        .then((userUpdated) => {
 
-    // devolver respuesta
-    return res.status(200).send({
-        status: "success",
-        message: "Subida de imagenes",
-        user: req.user,
-        file: req.file,
-        image
-    });
+            if (!userUpdated) {
+                return res.status(400).send({
+                    status: "error",
+                    message: "Error en la subida del avatar"
+                });
+            }
+
+
+            // devolver respuesta
+            return res.status(200).send({
+                status: "success",
+                user: userUpdated,
+                file: req.file,
+            });
+        }).catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                message: "Error de ejecucion"
+            });
+        });
+
+
 }
 
 // Exportar acciones
