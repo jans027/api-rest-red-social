@@ -1,5 +1,8 @@
+// Importar modelo
 const Follow = require("../models/follows");
 const User = require("../models/user");
+// Importar dependencias
+const mongoosePaginate = require("mongoose-pagination")
 
 // Acciones de prueba
 const pruebaFollow = (req, res) => {
@@ -87,13 +90,54 @@ const unFollow = async (req, res) => {
 };
 
 // Accion listado de usuarios que cualquier usuario esta siguiendo (siguiendo)
-const following = (req, res) => {
+const following = async (req, res) => {
+    try {
+        let userId = req.user.id;
 
-    return res.status(200).send({
-        status: "success",
-        message: "Listado de usuarios que estoy siguiendo"
-    });
+        if (req.params.id) userId = req.params.id;
+
+        let page = 1;
+        if (req.params.page) page = req.params.page;
+
+        // Saber el total de elementos y calcular el número de páginas 
+        let itemsPerPage = 3;
+        // Obtén el total de elementos que coinciden con tu consulta sin paginación
+        const totalFollows = await Follow.countDocuments({ user: userId });
+        // Calcula el número total de páginas utilizando la cantidad total 
+        // de elementos y el número de elementos por página
+        const totalPages = Math.ceil(totalFollows / itemsPerPage);
+
+
+        const follows = await Follow.find({ user: userId })
+        // .populate("user", "-role -email -password -__v");
+
+        // extrae todas las propiedades de los usuarios seguidos
+        const populatedFollows = await Promise.all(follows.map(async (follow) => {
+            const populatedFollowed = await User.findById(follow.followed)
+                .select("-role -email -password -__v");
+            return {
+                ...follow.toObject(),
+                followed: populatedFollowed
+            };
+        }));
+
+        return res.status(200).send({
+            status: "success",
+            message: "Listado de usuarios que estoy siguiendo",
+            follows: populatedFollows,
+            totalFollows: totalFollows,
+            totalPages: totalPages
+        });
+
+    } catch (error) {
+
+        return res.status(500).send({
+            status: "error",
+            message: "Ha ocurrido un error al ejecutar following",
+        });
+    }
 };
+
 
 // Accion listado de usuarios que siguen a cualquier otro usuario (soy seguido o mis seguidores)
 const followers = (req, res) => {
