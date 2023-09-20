@@ -5,7 +5,7 @@ const User = require("../models/user");
 const pruebaFollow = (req, res) => {
     return res.status(200).send({
         message: "Mensaje enviado desde: controller/follow.js"
-    })
+    });
 }
 
 // Accion de guardar un follow (accion de seguir)
@@ -45,7 +45,6 @@ const save = async (req, res) => {
             follows,
         });
     } catch (error) {
-        console.log(error);
         return res.status(500).json({
             status: "error",
             message: "Ha ocurrido un error en el guardado",
@@ -55,7 +54,37 @@ const save = async (req, res) => {
 }
 
 // Accion de borrar un follow (accion dejar de seguir)
+const unFollow = async (req, res) => {
+    // Recoger id del usuario identificado
+    const userId = req.user.id;
 
+    // Recoger el id del usuario que sigo y quiero dejar de seguir
+    const followedId = req.params.id;
+
+
+    // Find de las coincidencias y hacer un remove
+    Follow.deleteOne({ "user": userId, "followed": followedId })
+        .then((result) => {
+            if (result.deletedCount === 0) {
+                return res.status(500).json({
+                    status: "error",
+                    message: "No has dejado de seguir a nadie",
+                });
+            }
+
+            return res.status(200).send({
+                status: "success",
+                message: "Follow eliminado correctamente"
+            });
+        })
+        .catch((err) => {
+            return res.status(500).json({
+                status: "error",
+                message: "Ha ocurrido un error al ejecutar unFollow",
+            });
+        });
+
+}
 // Accion listado de usuarios que estoy siguiendo
 
 // Accion listado de usuarios que me siguen
@@ -64,5 +93,6 @@ const save = async (req, res) => {
 // Exportar acciones
 module.exports = {
     pruebaFollow,
-    save
+    save,
+    unFollow
 }
