@@ -10,6 +10,9 @@ router.get("/prueba-follow", FollowController.pruebaFollow);
 // Ruta util
 router.post("/save", check.auth, FollowController.save);
 router.delete("/unFollow/:id", check.auth, FollowController.unFollow);
+router.get("/following/:id?/:page?", FollowController.following);
+router.get("/followers/:id?/:page?", FollowController.followers);
+
 
 
 // Exportar router

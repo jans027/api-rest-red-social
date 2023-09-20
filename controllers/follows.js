@@ -6,7 +6,7 @@ const pruebaFollow = (req, res) => {
     return res.status(200).send({
         message: "Mensaje enviado desde: controller/follow.js"
     });
-}
+};
 
 // Accion de guardar un follow (accion de seguir)
 const save = async (req, res) => {
@@ -51,7 +51,7 @@ const save = async (req, res) => {
         });
     }
 
-}
+};
 
 // Accion de borrar un follow (accion dejar de seguir)
 const unFollow = async (req, res) => {
@@ -84,15 +84,31 @@ const unFollow = async (req, res) => {
             });
         });
 
-}
-// Accion listado de usuarios que estoy siguiendo
+};
 
-// Accion listado de usuarios que me siguen
+// Accion listado de usuarios que cualquier usuario esta siguiendo (siguiendo)
+const following = (req, res) => {
 
+    return res.status(200).send({
+        status: "success",
+        message: "Listado de usuarios que estoy siguiendo"
+    });
+};
+
+// Accion listado de usuarios que siguen a cualquier otro usuario (soy seguido o mis seguidores)
+const followers = (req, res) => {
+
+    return res.status(200).send({
+        status: "success",
+        message: "Listado de usuarios que me siguen"
+    });
+};
 
 // Exportar acciones
 module.exports = {
     pruebaFollow,
     save,
-    unFollow
+    unFollow,
+    following,
+    followers
 }
