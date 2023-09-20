@@ -25,7 +25,7 @@ router.get("/profile/:id", check.auth, UserController.profile);
 router.get("/list/:page?", check.auth, UserController.list); // con el "?" se define que un parametro es opcional
 router.put("/update", check.auth, UserController.update);
 router.post("/upload", [check.auth, uploads.single("file0")], UserController.upload);
-
+router.get("/avatar/:file", check.auth, UserController.avatar)
 
 
 // Exportar router

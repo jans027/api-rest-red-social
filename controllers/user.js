@@ -325,12 +325,11 @@ const upload = async (req, res) => {
         .then((userUpdated) => {
 
             if (!userUpdated) {
-                return res.status(400).send({
+                return res.status(500).send({
                     status: "error",
                     message: "Error en la subida del avatar"
                 });
             }
-
 
             // devolver respuesta
             return res.status(200).send({
@@ -345,8 +344,17 @@ const upload = async (req, res) => {
             });
         });
 
+};
 
-}
+// Mostrar avatar
+const avatar = async (req, res) => {
+
+    return res.status(200).send({
+        status: "success",
+        message: "Metodo mostrar avatar"
+    })
+};
+
 
 // Exportar acciones
 module.exports = {
@@ -356,5 +364,6 @@ module.exports = {
     profile,
     list,
     update,
-    upload
+    upload,
+    avatar
 }
