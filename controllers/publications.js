@@ -87,6 +87,35 @@ const detail = (req, res) => {
 };
 
 // Eliminar publicaciones
+const remove = (req, res) => {
+    // Obtener id de publicacion a eliminar
+    const publicationId = req.params.id;
+
+    // Find y luego remove
+    Publication.findOneAndDelete({ "user": req.user.id, "_id": publicationId })
+        .then((deletePost) => {
+
+            if (!deletePost) {
+                return res.status(400).send({
+                    status: "error",
+                    message: "No se ha heliminado la publication"
+                });
+            }
+            // Devolver respuesta
+            return res.status(200).send({
+                status: "success",
+                message: "Publicacion borrada con exito!",
+                publication: deletePost
+            });
+
+        }).catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                message: "Error al tratar de elimimar una publicacion"
+            });
+        });
+
+};
 
 // listar todas las publicaciones (de usuarios que sigo)
 
@@ -100,5 +129,6 @@ const detail = (req, res) => {
 module.exports = {
     pruebaPublication,
     save,
-    detail
+    detail,
+    remove
 }
