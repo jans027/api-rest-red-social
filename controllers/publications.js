@@ -117,9 +117,54 @@ const remove = (req, res) => {
 
 };
 
-// listar todas las publicaciones (de usuarios que sigo)
-
 // Listar publicaciones de un usuario
+const userPublicactions = async (req, res) => {
+    // Sacar el id de usuario
+    const userId = req.params.id;
+    // 
+    let userPublication = req.user;
+
+    // Controlar el numero de pagina
+    let page = 1;
+    if (req.params.page) page = req.params.page;
+    const itemsPerPage = 3;
+
+    // Find, populate, ordenar, paginar
+    try {
+        const publications = await Publication.find({ "user": userId })
+            .sort("-create_at")
+            // .select("user", "-email -password" )
+            .exec();
+
+        // Obtener el usuario actual (req.user) y eliminar campos sensibles
+        const currentUser = req.user;
+        delete currentUser.password;
+        delete currentUser.__v;
+        delete currentUser.iat;
+        delete currentUser.exp;
+        delete currentUser.email;
+
+        // Devolver respuesta
+        return res.status(200).send({
+            status: "success",
+            message: "Publicaciones del perfil de un usuario",
+            user: req.user,
+            publications
+        });
+    } catch (error) {
+        // Manejar el error aquí
+        console.error(error);
+        return res.status(500).send({
+            status: "error",
+            message: "Ha ocurrido un error al buscar las publicaciones del usuario",
+        });
+    }
+
+
+
+}
+
+// listar todas las publicaciones (de usuarios que sigo)
 
 // Subir ficheros
 
@@ -130,5 +175,6 @@ module.exports = {
     pruebaPublication,
     save,
     detail,
-    remove
+    remove,
+    userPublicactions
 }
