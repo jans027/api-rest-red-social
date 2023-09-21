@@ -4,7 +4,7 @@ const UserController = require("../controllers/user");
 const check = require("../middlewares/auth");
 const multer = require("multer");
 
-// Configuracion de subida
+// Configuracion de subida de archivos
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, "./uploads/avatars");

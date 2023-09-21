@@ -162,11 +162,71 @@ const userPublicactions = async (req, res) => {
 
 
 
-}
+};
+
+// Subir ficheros // subir imagenes
+const upload = async (req, res) => {
+    // Sacar publication id
+    const publicationId = req.params.id;
+
+    // Recoger fichero de imagen y comprobar que existe
+    if (!req.file) {
+        return res.status(404).send({
+            status: "error",
+            message: "Peticion no incluye mensaje",
+        });
+    }
+
+    // Conseguir el nombre del archivo
+    let image = req.file.originalname;
+
+    // Sacar la extension del archivo
+    const imageSplit = image.split("\.");
+    const extension = imageSplit[imageSplit.length - 1];
+
+    // Comprobar extension
+    if (extension != "png" && extension != "jpg" && extension != "jpeg" && extension != "gif") {
+
+        // Borrar archivo subido cuando no corresponde a la extension correcta
+        const filePath = req.file.path;
+        const fileDelete = fs.unlinkSync(filePath);
+        // Devolver respuesta negativa
+        return res.status(400).send({
+            status: "error",
+            message: "Extension del fichero invalida",
+        });
+    }
+
+    // Si es correcta, guardar imagen en base de datos
+    Publication.findByIdAndUpdate(
+        { "user": req.user.id, "_id": publicationId },
+        { file: req.file.filename },
+        { new: true })
+        .then((publicationUpdated) => {
+
+            if (!publicationUpdated) {
+                return res.status(500).send({
+                    status: "error",
+                    message: "Error en la subida del avatar"
+                });
+            }
+
+            // devolver respuesta
+            return res.status(200).send({
+                status: "success",
+                publication: publicationUpdated,
+                file: req.file,
+            });
+        }).catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                message: "Error de ejecucion"
+            });
+        });
+
+};
 
 // listar todas las publicaciones (de usuarios que sigo)
-
-// Subir ficheros
 
 // Devolver archivos multimedia (imagenes)
 
@@ -176,5 +236,6 @@ module.exports = {
     save,
     detail,
     remove,
-    userPublicactions
+    userPublicactions,
+    upload
 }
