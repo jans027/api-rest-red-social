@@ -1,3 +1,8 @@
+// Importar modulos
+const fs = require("fs").promises;
+const path = require("path");
+
+// Importar modelos
 const Publication = require("../models/publications")
 
 // Acciones de prueba
@@ -226,9 +231,41 @@ const upload = async (req, res) => {
 
 };
 
+// Devolver archivos multimedia (imagenes)
+const media = async (req, res) => {
+    // Sacar el parametro de la url
+    const file = req.params.file;
+
+    // Mostrar el path real de la imagen
+    const filePath = `./uploads/publications/${file}`;
+
+
+    try {
+
+        // Comprobar que existe
+        const exists = await fs.stat(filePath);
+
+        if (!exists) {
+            return res.status(404).send({
+                status: "error",
+                message: "No existe la imagen"
+            });
+        };
+
+        // Devolver un file
+        return res.sendFile(path.resolve(filePath));
+
+    } catch (error) {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en la consulta de avatar"
+        });
+    }
+
+};
+
 // listar todas las publicaciones (de usuarios que sigo)
 
-// Devolver archivos multimedia (imagenes)
 
 // Exportar acciones
 module.exports = {
@@ -237,5 +274,6 @@ module.exports = {
     detail,
     remove,
     userPublicactions,
-    upload
+    upload,
+    media
 }
