@@ -2,7 +2,9 @@
 const Follow = require("../models/follows");
 const User = require("../models/user");
 // Importar dependencias
-const mongoosePaginate = require("mongoose-pagination")
+const mongoosePaginate = require("mongoose-pagination");
+// Importar servicio
+const followService = require("../services/followService");
 
 // Acciones de prueba
 const pruebaFollow = (req, res) => {
@@ -121,12 +123,17 @@ const following = async (req, res) => {
             };
         }));
 
+        // sacar un array de ids de los usuarios que me siguen y los que yo sigo
+        let followUserIds = await followService.followUserIds(req.user.id);
+
         return res.status(200).send({
             status: "success",
             message: "Listado de usuarios que estoy siguiendo",
             follows: populatedFollows,
             totalFollows: totalFollows,
-            totalPages: totalPages
+            totalPages: totalPages,
+            user_following: followUserIds.following,
+            user_follow_me: followUserIds.followers
         });
 
     } catch (error) {

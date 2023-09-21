@@ -7,6 +7,9 @@ const path = require("path");
 const User = require("../models/user");
 //  Importar servicios
 const jwt = require("../services/jwt");
+const followService = require("../services/followService");
+
+
 
 // Acciones de prueba
 const pruebaUser = (req, res) => {
@@ -145,17 +148,23 @@ const profile = (req, res) => {
     // Consulta para sacar los datos del usuario
     User.findById(id)
         .select({ "role": 0, "email": 0, "password": 0 })// informacion que no se va a mostrar
-        .then((userProfile) => {
+        .then(async (userProfile) => {
             if (!userProfile) {
                 return res.status(404).send({
                     status: "error",
                     messague: "El usuario no existe o hay un error"
                 });
             }
+
+            // Info de seguimientos
+            const followInfo = await followService.followThisUser(req.user.id, id);
+
             // Devolver resultado
             return res.status(200).send({
                 status: "success",
-                user: userProfile
+                user: userProfile,
+                following: followInfo.following,
+                follower: followInfo.follower
             });
 
         }).catch((error) => {
@@ -194,6 +203,8 @@ const list = (req, res) => {
                 })
             }
 
+            // sacar un array de ids de los usuarios que me siguen y los que yo sigo
+            let followUserIds = await followService.followUserIds(req.user.id)
 
             // Devolver el resultado (posteriormente info de follows)
             return res.status(200).send({
@@ -202,7 +213,8 @@ const list = (req, res) => {
                 page,
                 itemsPerPage,
                 totalUsers,
-                pages: Math.ceil(totalUsers / itemsPerPage) //redondeo del total de paginas
+                pages: Math.ceil(totalUsers / itemsPerPage), //redondeo del total de paginas
+                followUserIds
             })
         }).catch((error) => {
             return res.status(500).send({
