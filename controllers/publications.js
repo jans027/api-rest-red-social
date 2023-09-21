@@ -265,6 +265,20 @@ const media = async (req, res) => {
 };
 
 // listar todas las publicaciones (de usuarios que sigo)
+const feed = (req, res) =>{
+    // Sacar la pagina actual
+
+    // Establecer numero de elementos por pagina
+
+    // Sacar un array de identificadortes de usuarios que yo sigo como usuario logueado
+
+    // Find a publicaciones utilizando operador "in", ordenar popular, paginar
+
+    return res.status(200).send({
+        status: "success",
+        message: "Metodo feed de publicaciones"
+    });
+}
 
 
 // Exportar acciones
@@ -275,5 +289,6 @@ module.exports = {
     remove,
     userPublicactions,
     upload,
-    media
+    media,
+    feed
 }
