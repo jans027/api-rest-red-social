@@ -53,13 +53,36 @@ const save = (req, res) => {
         });
 
 };
-// Sacar una publicacion en concreto
+// Mostrar una publicacion en concreto
 const detail = (req, res) => {
+    // Sacar id de publicacion de la url
+    const publicationId = req.params.id;
 
-    return res.status(200).send({
-        status: "success",
-        message: "Metodo mostrar publicacion"
-    });
+    // Find con la condicion del id
+    Publication.findById(publicationId)
+        .then((publicationStored) => {
+
+            if (!publicationStored) {
+                return res.status(400).send({
+                    status: "success",
+                    message: "No existe la publicacion"
+                });
+            };
+
+            // Devolver respuesta
+            return res.status(200).send({
+                status: "success",
+                message: "Mostrar publicacion",
+                publication: publicationStored
+            });
+
+        }).catch((err) => {
+
+            return res.status(500).send({
+                status: "success",
+                message: "Error al mostrar publicacion"
+            });
+        });
 
 };
 
@@ -76,5 +99,6 @@ const detail = (req, res) => {
 // Exportar acciones
 module.exports = {
     pruebaPublication,
-    save
+    save,
+    detail
 }

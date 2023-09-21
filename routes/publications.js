@@ -8,6 +8,8 @@ router.get("/prueba-publication", PublicationController.pruebaPublication);
 
 // Ruta util
 router.post("/save", check.auth, PublicationController.save);
+router.get("/detail/:id", check.auth, PublicationController.detail);
+
 
 
 // Exportar router
