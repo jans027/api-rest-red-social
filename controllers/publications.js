@@ -121,19 +121,12 @@ const remove = (req, res) => {
 const userPublicactions = async (req, res) => {
     // Sacar el id de usuario
     const userId = req.params.id;
-    // 
-    let userPublication = req.user;
+    console.log(userId)
 
-    // Controlar el numero de pagina
-    let page = 1;
-    if (req.params.page) page = req.params.page;
-    const itemsPerPage = 3;
-
-    // Find, populate, ordenar, paginar
+    // Find, populate, ordenar
     try {
         const publications = await Publication.find({ "user": userId })
-            .sort("-create_at")
-            // .select("user", "-email -password" )
+            .sort("-created_at")
             .exec();
 
         // Obtener el usuario actual (req.user) y eliminar campos sensibles
@@ -144,11 +137,18 @@ const userPublicactions = async (req, res) => {
         delete currentUser.exp;
         delete currentUser.email;
 
+        if (!publications || publications.length <= 0) {
+            return res.status(404).send({
+                status: "error",
+                message: "No hay publicaciones para mostrar"
+            });
+        }
+
         // Devolver respuesta
         return res.status(200).send({
             status: "success",
             message: "Publicaciones del perfil de un usuario",
-            user: req.user,
+            user: currentUser,
             publications
         });
     } catch (error) {
