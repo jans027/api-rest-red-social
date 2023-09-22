@@ -116,7 +116,7 @@ const following = async (req, res) => {
         // extrae todas las propiedades de los usuarios seguidos
         const populatedFollows = await Promise.all(follows.map(async (follow) => {
             const populatedFollowed = await User.findById(follow.followed)
-                .select("-role -email -password -__v");
+                .select("-role -email -password -__v -name -surname");
             return {
                 ...follow.toObject(),
                 followed: populatedFollowed

@@ -190,8 +190,9 @@ const list = (req, res) => {
     // Consulta con mongoose paginate
     let itemsPerPage = 5;
 
-    User.find().sort('_id').paginate(page, itemsPerPage)
+    User.find().sort('_id').paginate(page, itemsPerPage).select("-email -password -role -__v -name -surname")
         .then(async (users) => {
+
 
             // Get total users
             const totalUsers = await User.countDocuments({}).exec();
